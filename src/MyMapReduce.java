@@ -50,6 +50,10 @@ public abstract class MyMapReduce {
 		//#given a key returns the reduce task to send it
 		int node_number=0;
 		//#implement this method
+		
+		//__VAISHALI_09_17_2017__Using inbuilt hashcode() function to get hash on the string
+		// and use the modulo to get the reducer number as per the hash
+		node_number = k.hashCode() % this.num_reduce_tasks;
 		return node_number;
 	}
 	
@@ -57,11 +61,35 @@ public abstract class MyMapReduce {
 	public void reduceTask(ArrayList<KVPair> kvs, List<KVPair> namenode_fromR){
         //#sort all values for each key into a list 
         //#[TODO]
-
+		//__VAISHALI_09_17_2017__First sort as per the key using given compareTo function
+		Collections.sort(kvs,(a, b) -> b.compareTo(a));
+		
+		//__VAISHALI_09_17_2017__Grouping the values as per key using Java Map API
+		Map<Object, List<Object>> map = new HashMap<Object, List<Object>>();
+		for (KVPair kv : kvs) {
+			Object key  = kv.k;
+		    if(map.containsKey(key)){
+		        map.get(key).add(kv.v);
+		    }else{
+		        List<Object> list = new ArrayList<Object>();
+		        list.add(kv.v);
+		        map.put(key, list);
+		    }
+		}
 
         //#call reducers on each key paired with a *list* of values
         //#and append the result for each key to namenode_fromR
         //#[TODO]
+		//__VAISHALI_09_17_2017__Converting Map to list KVPair for easy call to reduce
+		List<KVPair> kv_group = new ArrayList<KVPair>();
+		for(Object key: map.keySet()){
+			KVPair kv = new KVPair(key,map.get(key));
+			kv_group.add(kv);
+		}
+		
+		for(KVPair kv : kv_group){
+			namenode_fromR.add(this.reduce(kv));
+		}
 	}
 	
 	public List<KVPair> runSystem() throws ExecutionException, InterruptedException{

@@ -5,6 +5,7 @@
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 //##########################################################################
 //##########################################################################
@@ -53,7 +54,7 @@ public abstract class MyMapReduce {
 		
 		//__VAISHALI_09_17_2017__Using inbuilt hashcode() function to get hash on the string
 		// and use the modulo to get the reducer number as per the hash
-		node_number = k.hashCode() % this.num_reduce_tasks;
+		node_number = Math.abs(k.hashCode()) % this.num_reduce_tasks;
 		return node_number;
 	}
 	
@@ -94,11 +95,10 @@ public abstract class MyMapReduce {
 	
 	public List<KVPair> runSystem() throws ExecutionException, InterruptedException{
 		/*#runs the full map-reduce system processes on mrObject
-
+		
         #the following two lists are shared by all processes
         #in order to simulate the communication
         #[DONE]*/
-		
 		
 		/*#divide up the data into chunks accord to num_map_tasks, launch a new process
          *#for each map task, passing the chunk of data to it. 
@@ -129,9 +129,45 @@ public abstract class MyMapReduce {
 			p.start();
 			Then, join them with 'p.join();' // wait for all ps to complete tasks
          *      */
+		//__VAISHALI__09_22_2017__Dividing data into chunks
+		List<KVPair[]> batches = new ArrayList<KVPair[]>();
+		int j=0;
+		for(int i=1;i<=this.num_map_tasks;i++){
+			KVPair[] batch = new KVPair[(int) Math.ceil(this.data.length/this.num_map_tasks)];
+			int k=0;
+			while(j <(data.length*i)/this.num_map_tasks){
+				batch[k] = this.data[j];
+				k++;
+				j++;
+			}
+			batches.add(batch);
+		}
 		
+		System.out.println(batches.get(0)[0].toString());
+		System.out.println(batches.get(0)[1].toString());
+		
+		//__VAISHALI_09_23_2017__Threads to call mapTask
+		ArrayList<Thread> mapThreads = new ArrayList<Thread>();
+		mapThreads.add(new Thread(new Runnable(){
+		
+        	@Override
+        	public void run() {		
+        		for(int i=0;i<batches.size();i++){
+        			mapTask(batches.get(i), svs.namenode_m2r);
+        		}
+        	}
+		}));
+        
+        //__VAISHALI_09_23_2017__Run the threads
+		for(Thread thread:mapThreads){
+        	thread.start();
+        }
+        //__VAISHALI_09_23_2017__Wait for the threads to get finished
+        for(Thread thread:mapThreads){
+        	thread.join();
+        }
+        
 		System.out.println("namenode_m2r after map tasks complete:");
-	
 		pprint(svs.namenode_m2r);
 		
 		/*
@@ -152,6 +188,34 @@ public abstract class MyMapReduce {
          *#print output from reducer tasks 
          *#[DONE]
 		 */
+		//__VAISHALI_09_23_2017__Creating list of KVPair for a particular reduce task
+		for(ReducerTask tr :svs.namenode_m2r){
+			if(to_reduce_task[tr.task_num]==null){
+				to_reduce_task[tr.task_num] = new ArrayList<KVPair>();
+			}
+			to_reduce_task[tr.task_num].add(tr.kv);
+		}
+		
+		ArrayList<Thread> reduceThreads = new ArrayList<Thread>();
+		reduceThreads.add(new Thread(new Runnable(){
+		
+        	@Override
+        	public void run() {		
+        		for(int i=0;i<batches.size();i++){
+        			reduceTask(to_reduce_task[i], svs.namenode_fromR);
+        		}
+        	}
+		}));
+		
+		//__VAISHALI_09_23_2017__Run the threads
+		for(Thread thread:reduceThreads){
+			thread.start();
+		}
+		//__VAISHALI_09_23_2017__Wait for the threads to get finished
+		for(Thread thread:reduceThreads){
+			thread.join();
+		}
+		
 		System.out.println("namenode_m2r after reduce tasks complete:");
 		pprint(svs.namenode_fromR);
 		

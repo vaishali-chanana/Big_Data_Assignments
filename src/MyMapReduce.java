@@ -39,7 +39,6 @@ public abstract class MyMapReduce {
 		//#runs the mappers and assigns each k,v to a reduce task
 		for (KVPair kv : data_chunk){
 			//#run mappers:
-			System.out.println(kv.v);
 			ArrayList<KVPair> mapped_kvs = this.map(kv);
 			//#assign each kv pair to a reducer task
 			for (KVPair mapped_kv:mapped_kvs){
@@ -90,7 +89,9 @@ public abstract class MyMapReduce {
 		}
 		
 		for(KVPair kv : kv_group){
-			namenode_fromR.add(this.reduce(kv));
+			KVPair ret = this.reduce(kv);
+			if (ret.k!=null)
+				namenode_fromR.add(ret);
 		}
 	}
 	
@@ -144,7 +145,7 @@ public abstract class MyMapReduce {
 			batches.add(batch);
 		}
 		
-		//System.out.println(batches.get(0)[0].toString());
+		System.out.println(batches.size());
 		//System.out.println(batches.get(0)[1].toString());
 		
 		//__VAISHALI_09_23_2017__Threads to call mapTask
@@ -183,7 +184,7 @@ public abstract class MyMapReduce {
          *#launch the reduce tasks as a new process for each. 
          *#[TODO]
          *
-         *#join the reduce tasks back
+         *#join the reduce tasks back2
          *#[TODO]
          *
          *#print output from reducer tasks 

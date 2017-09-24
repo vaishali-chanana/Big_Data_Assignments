@@ -1,6 +1,7 @@
 import java.util.concurrent.*;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Test {
 	public static void main(String[] args) throws ExecutionException, InterruptedException{
@@ -35,8 +36,24 @@ public class Test {
 	    		sElems.add(i);
 	    	}
 	    }
-	    int[] rSet=new int[rElems.size()];
-	    int[] sSet=new int[sElems.size()];
+	    //int[] rSet=new int[rElems.size()];
+	    //int[] sSet=new int[sElems.size()];
+	    
+	    // __VAISHALI_09_24_2017__Making changes to framework code as there is an error
+	    int[] rSet = new int[rElems.size()];
+	    for (int i=0; i < rSet.length; i++)
+	    {
+	        rSet[i] = rElems.get(i).intValue();
+	    }
+	    
+	    int[] sSet = new int[sElems.size()];
+	    for (int i=0; i < sSet.length; i++)
+	    {
+	        sSet[i] = sElems.get(i).intValue();
+	    }
+	    System.out.println("----");
+	    System.out.println(Arrays.toString(rSet));
+	    System.out.println(Arrays.toString(sSet));
 		KVPair[] data2 = {new KVPair('R', rSet),
 		 		 new KVPair('S', sSet)};
 	    SetDifferenceMR smrObject = new SetDifferenceMR(data1, 2, 2);

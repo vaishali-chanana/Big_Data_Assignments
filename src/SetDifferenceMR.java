@@ -10,10 +10,19 @@ public class SetDifferenceMR extends MyMapReduce {
 	public ArrayList<KVPair> map(KVPair kv) {
 		// TODO Auto-generated method stub
 		ArrayList<KVPair> set = new ArrayList<KVPair>();
-		for(Object record: (Object[])kv.v){
-			KVPair kvNew = new KVPair(record, kv.k);
-			set.add(kvNew);
+		
+		if(kv.v instanceof int[]){
+			for(int record: (int[])kv.v){
+				KVPair kvNew = new KVPair(record, kv.k);
+				set.add(kvNew);
+			}
+		}else if(kv.v instanceof String[]){
+			for(String record: (String[])kv.v){
+				KVPair kvNew = new KVPair(record, kv.k);
+				set.add(kvNew);
+			}
 		}
+		
 		return set;
 	}
 
@@ -22,9 +31,10 @@ public class SetDifferenceMR extends MyMapReduce {
 		// TODO Auto-generated method stub
 		
 		List<Character> list_C = (ArrayList<Character>)kv.v;
-		//if(!list_C.contains('S'))
-			return new KVPair(kv.k,kv.k);
-		//else return new KVPair(null,null);
+		
+		if(!list_C.contains('S'))
+			return new KVPair(list_C.get(0).toString(),kv.k);
+		else return new KVPair(null,null);
 		
 	}
 	

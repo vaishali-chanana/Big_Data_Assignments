@@ -54,7 +54,14 @@ public abstract class MyMapReduce {
 		
 		//__VAISHALI_09_17_2017__Using inbuilt hashcode() function to get hash on the string
 		// and use the modulo to get the reducer number as per the hash
-		node_number = Math.abs(k.hashCode()) % this.num_reduce_tasks;
+		//__VAISHALI_09_24_2017__Creating custom made
+		//node_number = Math.abs(k.hashCode()) % this.num_reduce_tasks;
+		int hashcode =0 ;
+		for(int i=0;i<k.length();i++){
+			hashcode +=(int) (Math.pow(31, k.length()-i)*(int)k.charAt(i));
+		}
+		
+		node_number = Math.abs(hashcode % this.num_reduce_tasks);
 		return node_number;
 	}
 	
@@ -144,9 +151,6 @@ public abstract class MyMapReduce {
 			}
 			batches.add(batch);
 		}
-		
-		System.out.println(batches.size());
-		//System.out.println(batches.get(0)[1].toString());
 		
 		//__VAISHALI_09_23_2017__Threads to call mapTask
 		ArrayList<Thread> mapThreads = new ArrayList<Thread>();

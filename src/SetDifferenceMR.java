@@ -33,7 +33,7 @@ public class SetDifferenceMR extends MyMapReduce {
 		List<Character> list_C = (ArrayList<Character>)kv.v;
 		
 		if(!list_C.contains('S'))
-			return new KVPair(list_C.get(0).toString(),kv.k);
+			return new KVPair(kv.k,list_C.get(0).toString());
 		else return new KVPair(null,null);
 		
 	}

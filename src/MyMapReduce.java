@@ -39,6 +39,7 @@ public abstract class MyMapReduce {
 		//#runs the mappers and assigns each k,v to a reduce task
 		for (KVPair kv : data_chunk){
 			//#run mappers:
+			System.out.println(kv.v);
 			ArrayList<KVPair> mapped_kvs = this.map(kv);
 			//#assign each kv pair to a reducer task
 			for (KVPair mapped_kv:mapped_kvs){
@@ -130,7 +131,7 @@ public abstract class MyMapReduce {
 			Then, join them with 'p.join();' // wait for all ps to complete tasks
          *      */
 		//__VAISHALI__09_22_2017__Dividing data into chunks
-		List<KVPair[]> batches = new ArrayList<KVPair[]>();
+		List<KVPair[]> batches = Collections.synchronizedList(new ArrayList<KVPair[]>());
 		int j=0;
 		for(int i=1;i<=this.num_map_tasks;i++){
 			KVPair[] batch = new KVPair[(int) Math.ceil(this.data.length/this.num_map_tasks)];
@@ -143,8 +144,8 @@ public abstract class MyMapReduce {
 			batches.add(batch);
 		}
 		
-		System.out.println(batches.get(0)[0].toString());
-		System.out.println(batches.get(0)[1].toString());
+		//System.out.println(batches.get(0)[0].toString());
+		//System.out.println(batches.get(0)[1].toString());
 		
 		//__VAISHALI_09_23_2017__Threads to call mapTask
 		ArrayList<Thread> mapThreads = new ArrayList<Thread>();
@@ -201,7 +202,7 @@ public abstract class MyMapReduce {
 		
         	@Override
         	public void run() {		
-        		for(int i=0;i<batches.size();i++){
+        		for(int i=0;i<num_reduce_tasks;i++){
         			reduceTask(to_reduce_task[i], svs.namenode_fromR);
         		}
         	}

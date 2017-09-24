@@ -39,9 +39,9 @@ public class Test {
 	    int[] sSet=new int[sElems.size()];
 		KVPair[] data2 = {new KVPair('R', rSet),
 		 		 new KVPair('S', sSet)};
-	    //SetDifferenceMR smrObject = new SetDifferenceMR(data1, 2, 2);
-	    //smrObject.runSystem();
-	    //smrObject = new SetDifferenceMR(data2, 2, 2)
-	    //smrObject.runSystem() 
+	    SetDifferenceMR smrObject = new SetDifferenceMR(data1, 2, 2);
+	    smrObject.runSystem();
+	    smrObject = new SetDifferenceMR(data2, 2, 2);
+	    smrObject.runSystem();
 	}
 }

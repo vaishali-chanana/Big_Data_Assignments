@@ -2,4 +2,30 @@ import java.util.*;
 
 public class SetDifferenceMR extends MyMapReduce {
 
+	public SetDifferenceMR(KVPair[] data, int num_map_tasks, int num_reduce_tasks) {
+		super(data, num_map_tasks, num_reduce_tasks);
+	}
+
+	@Override
+	public ArrayList<KVPair> map(KVPair kv) {
+		// TODO Auto-generated method stub
+		ArrayList<KVPair> set = new ArrayList<KVPair>();
+		for(Object record: (Object[])kv.v){
+			KVPair kvNew = new KVPair(record, kv.k);
+			set.add(kvNew);
+		}
+		return set;
+	}
+
+	@Override
+	public KVPair reduce(KVPair kv) {
+		// TODO Auto-generated method stub
+		
+		List<Character> list_C = (ArrayList<Character>)kv.v;
+		//if(!list_C.contains('S'))
+			return new KVPair(kv.k,kv.k);
+		//else return new KVPair(null,null);
+		
+	}
+	
 }

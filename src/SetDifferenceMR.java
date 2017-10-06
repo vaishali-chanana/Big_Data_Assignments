@@ -21,6 +21,11 @@ public class SetDifferenceMR extends MyMapReduce {
 				KVPair kvNew = new KVPair(record, kv.k);
 				set.add(kvNew);
 			}
+		}else if(kv.v instanceof Float[]){
+			for(Float record: (Float[])kv.v){
+				KVPair kvNew = new KVPair(record, kv.k);
+				set.add(kvNew);
+			}
 		}
 		
 		return set;

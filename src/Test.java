@@ -51,9 +51,7 @@ public class Test {
 	    {
 	        sSet[i] = sElems.get(i).intValue();
 	    }
-	    System.out.println("----");
-	    System.out.println(Arrays.toString(rSet));
-	    System.out.println(Arrays.toString(sSet));
+	    
 		KVPair[] data2 = {new KVPair('R', rSet),
 		 		 new KVPair('S', sSet)};
 	    SetDifferenceMR smrObject = new SetDifferenceMR(data1, 2, 2);
